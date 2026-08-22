@@ -1,4 +1,5 @@
 from pwdlib import PasswordHash
+from jose import JWTError
 import jwt
 from datetime import datetime, timedelta, timezone
 from app.core.config import settings
@@ -23,6 +24,22 @@ def create_access_token(user_id: int) -> str:
     return jwt.encode(
         payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm
     )
+
+
+def verify_access_token(token: str) -> int | None:
+    try:
+        payload = jwt.decode(
+            token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm]
+        )
+        if payload.get("type") != "access":
+            return None
+        subject = payload.get("sub")
+        if subject is None:
+            return None
+
+        return int(subject)
+    except JWTError:
+        return None
 
 
 def create_refresh_token_id() -> str:
