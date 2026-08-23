@@ -9,7 +9,7 @@ class DocumentParser:
         if path.suffix.lower() == ".txt":
             return path.read_text(encoding="utf-8")
         if path.suffix.lower() == ".pdf":
-            return self.extract_pdf(path)
+            return self._extract_pdf(path)
         raise ValueError(f"unsupported file type: {path.suffix} ")
 
     def _extract_pdf(self, path: Path) -> str:

@@ -1,6 +1,7 @@
 from pwdlib import PasswordHash
 from jose import JWTError
 import jwt
+from jwt.exceptions import InvalidTokenError
 from datetime import datetime, timedelta, timezone
 from app.core.config import settings
 import secrets
@@ -38,7 +39,7 @@ def verify_access_token(token: str) -> int | None:
             return None
 
         return int(subject)
-    except JWTError:
+    except InvalidTokenError:
         return None
 
 

@@ -5,6 +5,7 @@ from app.core.security import verify_access_token
 from app.database.dependencies import get_db
 from app.models.user import User
 from app.repositories.user import UserRepository
+from app.models.tenant_member import TenantMember
 
 bearer_scheme = HTTPBearer()
 
