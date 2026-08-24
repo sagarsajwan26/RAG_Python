@@ -17,6 +17,12 @@ services:
     restart: unless-stopped
     ports:
       - "8080:8080"
-
+  ollama:
+    image: ollama/ollama
+    container_name: rag_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - D:/Ollama/Models:/root/.ollama
 volumes:
   pgdata:
