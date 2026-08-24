@@ -1,15 +1,14 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.database.dependencies import get_db
-from app.repositories.user import UserRepository
-from app.schemas.user import UserResponse
-from app.services.user import UserService
+from fastapi import FastAPI, APIRouter, Depends
+from app.core.dependencies import get_current_user
+from app.models.user import User
 
 router = APIRouter()
 
 
-@router.get("/", response_model=list[UserResponse])
-async def get_users(db: AsyncSession = Depends(get_db)):
-    repository = UserRepository(db)
-    service = UserService(repository)
-    return await service.get_all_users()
+@router.get("/me")
+async def get_me(current_user: User = Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "name": current_user.name,
+    }
