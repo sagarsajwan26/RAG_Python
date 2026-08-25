@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response, Cookie, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.dependencies import get_db
 from app.services.auth import AuthService
@@ -22,6 +22,7 @@ async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
 @router.post("/login")
 async def login(
     data: LoginRequest,
+    response: Response,
     db: AsyncSession = Depends(get_db),
 ):
     service = AuthService(db)
@@ -29,9 +30,50 @@ async def login(
         email=data.email,
         password=data.password,
     )
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=30 * 60,
+    )
+
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=30 * 24 * 60 * 60,
+    )
+
+    return {"message": "login successful"}
+
+
+@router.post("/refresh")
+async def refresh(
+    response: Response,
+    refresh_token: str | None = None,
+    db: AsyncSession = Depends(get_db),
+):
+    if refresh_token is None:
+        raise HTTPException(status_code=401, detail="refresh token missing")
+
+    service = AuthService(db)
+    access_token = await service.refresh(
+        refresh_token=refresh_token,
+    )
+
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=30 * 60,
+    )
 
     return {
-        "access_token": access_token,
-        "refresh_token": refresh_token,
-        "token_type": "bearer",
+        "message": "Token refreshed",
     }

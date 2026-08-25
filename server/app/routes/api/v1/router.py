@@ -9,7 +9,7 @@ api_router.include_router(
     tags=["Authentication"],
 )
 api_router.include_router(
-    conversation.router, prefix="/conversation", tags=["conversation"]
+    conversation.router, prefix="/conversations", tags=["conversation"]
 )
 api_router.include_router(search.router, prefix="/search", tags=["search"])
 api_router.include_router(document.router, prefix="/document", tags=["documents"])
