@@ -4,7 +4,16 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy import pool
 from app.models import Base
 from alembic import context
-from app.models import TenantMember, User, Tenant, Document, RefreshToken, Chunk
+from app.models import (
+    TenantMember,
+    User,
+    Tenant,
+    Document,
+    RefreshToken,
+    Chunk,
+    Conversation,
+    Message,
+)
 
 from app.core.config import settings
 
