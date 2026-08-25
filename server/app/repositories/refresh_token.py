@@ -39,8 +39,10 @@ class RefreshTokenRepository:
 
     async def get_active_tokens_by_user(self, user_id: int) -> list[RefreshToken]:
         result = await self.db.execute(
-            select(RefreshToken).where(RefreshToken.user_id) == user_id,
-            RefreshToken.revoked_at.is_(None),
+            select(RefreshToken).where(
+                RefreshToken.user_id == user_id,
+                RefreshToken.revoked_at.is_(None),
+            )
         )
         return list(result.scalars().all())
 
