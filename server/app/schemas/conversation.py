@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from datetime import datetime
 
 
 class AskRequest(BaseModel):
@@ -9,11 +10,37 @@ class AskRequest(BaseModel):
 class SourceResponse(BaseModel):
     id: int
     document_id: int
-    chunk_inded: int
+    chunk_index: int
     text: str
 
 
 class AskResponse(BaseModel):
     question: str
     answer: str
-    source: list[SourceResponse]
+    sources: list[SourceResponse]
+
+
+class ConversationCreateResponse(BaseModel):
+
+    id: int
+
+
+class MessageResponse(BaseModel):
+    id: int
+    role: str
+    content: str
+
+
+class ConversationResponse(BaseModel):
+    id: int
+    messages: list[MessageResponse]
+
+
+class ConversationListItem(BaseModel):
+    id: int
+    created_at: datetime
+    title: str | None
+
+
+class ConversationListResponse(BaseModel):
+    conversations: list[ConversationListItem]

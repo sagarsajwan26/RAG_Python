@@ -16,7 +16,12 @@ class RAGService:
         self.llm = llm
         self.prompt_builder = prompt_builder
 
-    async def answer(self, question: str, tenant_id: int, top_k: int = 5):
+    async def answer(self, question: str, tenant_id: int, top_k: int = 5, history=None):
+        conversation_history = ""
+        if history:
+            conversation_history = "\n".join(
+                f"{message.role}:{message.content}" for message in history
+            )
         chunks = await self.retrieval_service.search(
             query=question,
             tenant_id=tenant_id,
@@ -24,6 +29,8 @@ class RAGService:
         )
         context = self.context_builder.build(chunks)
 
-        prompt = self.prompt_builder.build(question=question, context=context)
+        prompt = self.prompt_builder.build(
+            question=question, context=context, history=conversation_history
+        )
         answer = await self.llm.generate(prompt)
-        return {"answer": answer, "source": chunks}
+        return {"answer": answer, "sources": chunks}

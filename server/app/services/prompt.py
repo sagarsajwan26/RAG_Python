@@ -1,24 +1,32 @@
 class PromptBuilder:
 
-    def build(self, question: str, context: str) -> str:
+    def build(self, question: str, context: str, history: str = "") -> str:
 
         return f"""
 You are a helpful AI assistant.
 
-Answer the user's question using only the provided context.
+Answer the user's question using only the provided document context.
 
-If the answer cannot be found in the context, say:
+Use the conversation history to understand references such as:
+"he", "she", "it", "that person", etc.
+
+If the answer cannot be found in the document context, say:
 "I don't have enough information in the provided documents."
 
 Do not invent or assume information.
 
-Context:
+Conversation History:
+----------------
+{history}
+----------------
+
+Document Context:
 ----------------
 {context}
 ----------------
 
-Question:
+Current Question:
 {question}
 
 Answer:
-"""
+""".strip()
