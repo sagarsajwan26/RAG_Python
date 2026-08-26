@@ -96,6 +96,7 @@ async def ask(
 
 @router.post("/", response_model=ConversationCreateResponse)
 async def create_conversation(
+    tenant_id: int,
     membership: TenantMember = Depends(require_roles("owner", "admin", "member")),
     db: AsyncSession = Depends(get_db),
 ):
@@ -128,7 +129,7 @@ async def get_conversations(
     }
 
 
-@router.get("{conversation_id}", response_model=ConversationResponse)
+@router.get("/{conversation_id}", response_model=ConversationResponse)
 async def get_conversation(
     conversation_id: int,
     membership: TenantMember = Depends(require_roles("owner", "admin", "member")),
