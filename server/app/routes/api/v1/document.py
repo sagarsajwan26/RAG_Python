@@ -46,3 +46,19 @@ async def upload_document(
         storage_path=storage_path,
     )
     return document
+
+
+@router.get(
+    "/{tenant_id}/documents",
+    response_model=list[DocumentResponse],
+)
+async def get_documents(
+    tenant_id: int,
+    membership: TenantMember = Depends(require_roles("owner", "admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    service = DocumentService(db)
+    documents = await service.get_documents(
+        tenant_id=membership.tenant_id,
+    )
+    return documents

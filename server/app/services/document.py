@@ -5,6 +5,7 @@ from app.services.document_parser import DocumentParser
 from app.services.chunkers import TextChunker
 from app.services.embedding import EmbeddingService
 from app.services.storage import StorageService
+from app.models.documents import Document
 
 
 class DocumentService:
@@ -57,3 +58,9 @@ class DocumentService:
         await self.db.refresh(document)
 
         return document
+
+    async def get_by_tenant(self, tenant_id: int) -> list[Document]:
+        pass
+
+    async def get_documents(self, tenant_id: int):
+        return await self.document_repository.get_by_tenant(tenant_id)
