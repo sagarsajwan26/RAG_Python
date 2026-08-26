@@ -1,5 +1,4 @@
 import api from "../client";
-import {Respons}
 export interface LoginRequest {
   email: string;
   password: string;
@@ -48,5 +47,6 @@ export async function refresh(): Promise<AuthResponse> {
 }
 
 export async function logout() {
-  return;
+  const response = await api.post("/api/v1/auth/logout", {});
+  return response.data;
 }
