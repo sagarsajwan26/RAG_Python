@@ -1,14 +1,15 @@
 "use client";
 import React from "react";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, use } from "react";
 import { MessageSquare, Sparkles } from "lucide-react";
-import { askQuestion, createConversation } from "@/lib/api/conversations";
+import { askQuestion, getConversation } from "@/lib/api/conversations";
 import { Message } from "@/lib/types/conversation";
 
 const TENANT_ID = 3;
 
-export default function ChatPage() {
-  const [conversationId, setConversationId] = useState<number | null>(null);
+export default function ChatPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const conversationId = parseInt(id, 10);
   const [messages, setMessages] = useState<Message[]>([]);
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,26 +17,29 @@ export default function ChatPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function initializeConversation() {
+    async function loadConversation() {
       try {
         setInitializing(true);
         setError(null);
-        const consersation = await createConversation(TENANT_ID);
-        setConversationId(consersation.id);
+        const conversation = await getConversation(TENANT_ID, conversationId);
+        setMessages(conversation.messages || []);
       } catch (error) {
-        console.error("Failed to create conversation:", error);
-        setError("Failed to start conversation.");
+        console.error("Failed to load conversation:", error);
+        setError("Failed to load conversation.");
       } finally {
         setInitializing(false);
       }
     }
-    initializeConversation();
-  }, []);
+    if (conversationId) {
+      loadConversation();
+    }
+  }, [conversationId]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!conversationId) {
       setError("conversation is not ready");
+      return;
     }
     if (!question.trim()) {
       return;
@@ -65,21 +69,22 @@ export default function ChatPage() {
       setLoading(false);
     }
   }
+
   if (initializing) {
     return (
-      <main className="flex h-[calc(100vh-8rem)] items-center justify-center text-gray-500">
+      <main className="flex h-full items-center justify-center text-gray-500">
         <div className="flex flex-col items-center gap-3">
           <Sparkles className="h-8 w-8 animate-pulse text-blue-500" />
-          <p className="text-lg font-medium">Starting conversation...</p>
+          <p className="text-lg font-medium">Loading conversation...</p>
         </div>
       </main>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-4 space-y-6 animate-in fade-in duration-500 h-[calc(100vh-8rem)] flex flex-col w-full">
+    <div className="max-w-5xl mx-auto p-4 space-y-6 animate-in fade-in duration-500 h-full flex flex-col w-full">
       {error && (
-        <div className="p-4 bg-red-50 text-red-600 rounded-lg border border-red-200 shadow-sm">
+        <div className="p-4 bg-red-50 text-red-600 rounded-lg border border-red-200 shadow-sm shrink-0">
           {error}
         </div>
       )}
