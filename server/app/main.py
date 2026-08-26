@@ -5,7 +5,7 @@ from app.routes.api.v1.router import api_router
 app = FastAPI(title="ai document intelligence Platform")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8000"],
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_headers=["*"],
     allow_methods=["*"],
